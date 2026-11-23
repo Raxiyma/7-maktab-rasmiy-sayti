@@ -1,6 +1,7 @@
 ---
 title: 🏆 JEŃIMPAZ OQÍWSHÍLARÍMÍZǴA HÚRMET JÁRLIǴÍ TAPSÍRÍLDÍ! 🎓✨
 date: 2026-11-23
+category: Jetiskenliklerimiz
 image: /media/photo_2026-10-29_08-47-27.jpg
 ---
 Mektebimizde olimpiadalarda joqarı nátiyjelerge erisken, orınlarǵa iye bolǵan oqıwshılarımızǵa jetiskenlikleri ushın Húrmet jarlıqları tapsırıldı. 🥇👏
