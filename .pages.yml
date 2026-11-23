@@ -12,12 +12,26 @@ content:
       - name: title
         label: Sarlavha
         type: string
+
       - name: date
         label: Sana
         type: date
+
+      - name: category
+        label: Bólim
+        type: select
+        options:
+          values:
+            - Bilimlendiriw jańalıqları
+            - Ruxiy-aǵartıwshılıq ilajları
+            - Jetiskenliklerimiz
+            - Oqıwshılar keńesi
+            - Oqıtıwshılar haqqında maǵlıwmat
+
       - name: image
         label: Súwret
         type: image
+
       - name: body
         label: Mazmun
-        type: rich-text.pages.yml
+        type: rich-text
