@@ -1,1 +1,23 @@
-.pages.yml
+media:
+  input: media
+  output: /media
+
+content:
+  - name: news
+    label: Jańalıqlar
+    type: collection
+    path: news
+    filename: "{primary}.md"
+    fields:
+      - name: title
+        label: Sarlavha
+        type: string
+      - name: date
+        label: Sana
+        type: date
+      - name: image
+        label: Súwret
+        type: image
+      - name: body
+        label: Mazmun
+        type: rich-text.pages.yml
