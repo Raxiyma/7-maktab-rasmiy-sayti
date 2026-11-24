@@ -1,19 +1,49 @@
 
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="kaa">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>7-maktab | Rasmiy sayt</title>
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 22px;
+        }
+
+        .news-card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px #00000012;
+            overflow: hidden;
+        }
+
+        .news-card img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .news-card h3 {
+            color: #0754a5;
+        }
+
+        .news-date {
+            color: #718096;
+            font-size: 13px;
+        }
+    </style>
 </head>
+
 <body>
 
-    <!-- Yuqori qism -->
     <header>
-        <div class="logo">
-            7-MAKTAB
-        </div>
+        <div class="logo">7-MAKTAB</div>
 
         <nav>
             <a href="#home">Bas bet/ </a>
@@ -23,7 +53,6 @@
         </nav>
     </header>
 
-    <!-- Asosiy banner -->
     <section class="hero" id="home">
         <div class="hero-content">
             <p class="small-title">XOSH KELIPSIZ!</p>
@@ -33,7 +62,6 @@
         </div>
     </section>
 
-    <!-- Mektep haqqında -->
     <section class="about" id="about">
         <h2>Mektebimiz haqqında</h2>
         <p>
@@ -43,44 +71,184 @@
         </p>
     </section>
 
-    <!-- Jańalıqlar -->
-    <section class="news" id="news">
-        <h2>Jańalıqlar</h2>
+    <!-- CMS arqali avtomat jańalanatuǵın bólim -->
+    
+<section class="news" id="news">
+    <h2>Jańalıqlar</h2>
 
-        <div class="news-container">
-            <div class="news-card">
-                <h3>Bilimlendiriw jańalıqları</h3>
-                <p>Mektebimizdegi áhmiyetli jańalıqlar hám daǵazlar.</p>
-            </div>
-
-            <div class="news-card">
-                <h3>Ruxiy-aǵartıwshılıq ilajları</h3>
-                <p>Ótkiziletuǵın ilajlar hám oqiwshilar iskerligi.</p>
-            </div>
-
-            <div class="news-card">
-                <h3>Jetiskenliklerimiz</h3>
-                <p>Oqıwshılarımızdıń tańlaw hám jarıslardan jetiskenlikleri.</p>
-            </div>
-
-            <div class="news-card">
-                <h3>Oqıwshılar keńesi</h3>
-                <p>Oqıwshılar keńesiniń iskerligi.</p>
-            </div>
-
-            <div class="news-card">
-                <h3>Oqıtıwshılar haqqında maǵlıwmat</h3>
-                <p>Oqıtıwshılar haqqında maǵlıwmat hám olardıń jetiskenlikleri.</p>
-            </div>
+    <div class="news-container" id="category-list">
+        <div class="news-card" onclick="showCategory('Bilimlendiriw jańalıqları')">
+            <h3>Bilimlendiriw jańalıqları</h3>
+            <p>Bólimge kiriw →</p>
         </div>
-    </section>
 
-    <!-- Baylanıs -->
+        <div class="news-card" onclick="showCategory('Ruxiy-aǵartıwshılıq ilajları')">
+            <h3>Ruxiy-aǵartıwshılıq ilajları</h3>
+            <p>Bólimge kiriw →</p>
+        </div>
+
+        <div class="news-card" onclick="showCategory('Jetiskenliklerimiz')">
+            <h3>Jetiskenliklerimiz</h3>
+            <p>Bólimge kiriw →</p>
+        </div>
+
+        <div class="news-card" onclick="showCategory('Oqıwshılar keńesi')">
+            <h3>Oqıwshılar keńesi</h3>
+            <p>Bólimge kiriw →</p>
+        </div>
+
+        <div class="news-card" onclick="showCategory('Oqıtıwshılar haqqında maǵlıwmat')">
+            <h3>Oqıtıwshılar haqqında maǵlıwmat</h3>
+            <p>Bólimge kiriw →</p>
+        </div>
+    </div>
+
+    <div id="news-list" style="display:none;"></div>
+</section>
+
+
     <footer id="contact">
         <h2>7-sanlı ulıwma bilim beriw mektebi</h2>
         <p>+998996543700</p>
         <p>© 2026</p>
     </footer>
+
+    
+<script>
+const apiUrl =
+"https://api.github.com/repos/Raxiyma/7-maktab-rasmiy-sayti/contents/news";
+
+let allArticles = [];
+
+async function loadNews() {
+    const container = document.getElementById("news-list");
+
+    try {
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+            throw new Error("Jańalıqlar júklenbedi");
+        }
+
+        const files = await response.json();
+
+        const newsFiles = files.filter(file =>
+            file.name.endsWith(".md")
+        );
+
+        allArticles = await Promise.all(
+            newsFiles.map(async file => {
+                const result = await fetch(file.download_url);
+                const raw = await result.text();
+
+                const match = raw.match(
+                    /^---\s*\r?\n([\s\S]*?)\r?\n---\s*\r?\n?([\s\S]*)$/
+                );
+
+                if (!match) return null;
+
+                const metadata = match[1];
+                const body = match[2].trim();
+
+                function getField(name) {
+                    const field = metadata.match(
+                        new RegExp("^" + name + ":\\s*(.*)$", "m")
+                    );
+
+                    return field
+                        ? field[1].trim().replace(/^["']|["']$/g, "")
+                        : "";
+                }
+
+                return {
+                    title: getField("title"),
+                    date: getField("date"),
+                    category: getField("category"),
+                    image: getField("image"),
+                    body: body
+                };
+            })
+        );
+
+        allArticles = allArticles
+            .filter(article => article && article.title)
+            .sort((a, b) => b.date.localeCompare(a.date));
+
+    } catch (error) {
+        console.error(error);
+        container.textContent =
+            "Jańalıqlardı júklewde qátelik júz berdi.";
+    }
+}
+
+function showCategory(categoryName) {
+    const categoryList = document.getElementById("category-list");
+    const container = document.getElementById("news-list");
+
+    categoryList.style.display = "none";
+    container.style.display = "block";
+    container.innerHTML = "";
+
+    const backButton = document.createElement("button");
+    backButton.textContent = "← Barlıq bólimlerge qaytıw";
+    backButton.onclick = function() {
+        container.style.display = "none";
+        categoryList.style.display = "grid";
+    };
+    container.appendChild(backButton);
+
+    const heading = document.createElement("h2");
+    heading.textContent = categoryName;
+    container.appendChild(heading);
+
+    const selectedArticles = allArticles.filter(article =>
+        article.category === categoryName
+    );
+
+    if (selectedArticles.length === 0) {
+        const message = document.createElement("p");
+        message.textContent = "Bul bólimde házir jańalıqlar joq.";
+        container.appendChild(message);
+        return;
+    }
+
+    selectedArticles.forEach(article => {
+        const card = document.createElement("article");
+        card.className = "news-card";
+
+        const title = document.createElement("h3");
+        title.textContent = article.title;
+        card.appendChild(title);
+
+        if (article.date) {
+            const date = document.createElement("p");
+            date.className = "news-date";
+            date.textContent = article.date;
+            card.appendChild(date);
+        }
+
+        if (article.image) {
+            const img = document.createElement("img");
+            img.src = article.image;
+            img.alt = article.title;
+            card.appendChild(img);
+        }
+
+        article.body.split(/\n\s*\n/).forEach(paragraph => {
+            if (paragraph.trim()) {
+                const p = document.createElement("p");
+                p.textContent = paragraph.trim();
+                card.appendChild(p);
+            }
+        });
+
+        container.appendChild(card);
+    });
+}
+
+loadNews();
+</script>
+
 
 </body>
 </html>
